@@ -1,7 +1,7 @@
 ## xray_docker_reality
 xray reality docker image
 
-[![xray_docker_reality_docker_image_build](https://github.com/wulabing/xray_docker/actions/workflows/xray_docker_reality.yml/badge.svg)](https://github.com/wulabing/xray_docker/actions/workflows/xray_docker_reality. yml)
+[![xray_docker_reality_docker_image_build](https://github.com/wulabing/xray_docker/actions/workflows/xray_docker_reality.yml/badge.svg)](https://github.com/wulabing/xray_docker/actions/workflows/xray_docker_reality.yml)
 
 ## Basic usage
 If you don't have docker installed, please install docker first
@@ -16,7 +16,13 @@ EXTERNAL_PORT is the port you want to use, as shown below, you will use port 443
 ```
 docker pull wulabing/xray_docker_reality:latest
 EXTERNAL_PORT=443
-docker run -d --name xray_reality --restart=always -p $EXTERNAL_PORT:443 -e EXTERNAL_PORT=$EXTERNAL_PORT wulabing/xray_docker_reality:latest
+docker run -d \
+--name xray_reality \
+-v /path/to/your/config.json:/config.json \
+--restart=always \
+-p $EXTERNAL_PORT:443 \
+-e EXTERNAL_PORT=$EXTERNAL_PORT \
+wulabing/xray_docker_reality:latest
 ```
 
 Check the log to get the configuration information, as shown below, just follow the prompts to configure the client,
