@@ -1,18 +1,21 @@
-# builder
-FROM golang:alpine as builder
-LABEL maintainer="wulabing <wulabing@gmail.com>"
+# builder stage
+FROM golang:1.20.5-alpine3.18 as builder
+LABEL maintainer="Ali Heydari <ali4heydari@gmail.com>"
+ARG XRAY_TAG="v1.8.3"
+# Thanks to wulabing <wulabing@gmail.com> for initial version
 
 
-#ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /app
 
-RUN apk add --no-cache git  && git clone https://github.com/XTLS/Xray-core.git . && \
+RUN apk add --no-cache git && \
+    git clone --depth 1 --branch $XRAY_TAG https://github.com/XTLS/Xray-core.git . && \
     go mod download && \
     go build -o xray /app/main/
 
-# runner
-FROM alpine:latest as runner
 
+
+# runner stage
+FROM alpine:3.18 as runner
 
 ENV UUID=""
 ENV DEST=""
@@ -20,20 +23,23 @@ ENV SERVERNAMES=""
 ENV PRIVATEKEY=""
 ENV SHORTIDS=""
 ENV NETWORK=""
-ENV TZ=Asia/Shanghai
+ENV TZ=Asia/Tehran
+ENV PATH="${PATH}:/app/bin"
 
-WORKDIR /
+WORKDIR /app
 
-COPY ./entrypoint.sh /
-COPY ./config.json /
+COPY --from=builder /app/xray /app/bin/xray
 
-COPY --from=builder /app/xray /
+COPY ./entrypoint.sh ./scheduled-job.sh ./
 
-RUN apk add --no-cache tzdata ca-certificates jq curl libqrencode && \
-    mkdir -p /var/log/xray &&\
-    wget -O /geosite.dat https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat && \
-    wget -O /geoip.dat https://github.com/v2fly/geoip/releases/latest/download/geoip.dat && \
-    chmod +x /entrypoint.sh
+RUN apk add --no-cache tzdata ca-certificates jq curl libqrencode perl-utils && \
+    mkdir -p /var/log/xray && \
+    mkdir -p /var/log/xray && \
+    chmod +x ./entrypoint.sh ./scheduled-job.sh
 
-EXPOSE 443
-ENTRYPOINT ["./entrypoint.sh"]
+EXPOSE 10808
+EXPOSE 10809
+
+VOLUME /app/configs
+
+ENTRYPOINT ["/app/entrypoint.sh"]
