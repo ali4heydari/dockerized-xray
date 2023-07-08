@@ -1,7 +1,7 @@
 ## xray_docker_reality
 xray reality docker image
 
-[![xray_docker_reality_docker_image_build](https://github.com/wulabing/xray_docker/actions/workflows/xray_docker_reality.yml/badge.svg)](https://github.com/wulabing/xray_docker/actions/workflows/xray_docker_reality.yml)
+[![xray_docker_reality_docker_image_build](https://github.com/ali4heydari/dockerized-xray/actions/workflows/dockerized-xray.yml/badge.svg)](https://github.com/ali4heydari/dockerized-xray/actions/workflows/dockerized-xray.yml)
 
 ## Basic usage
 If you don't have docker installed, please install docker first
