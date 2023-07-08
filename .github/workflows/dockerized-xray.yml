@@ -5,13 +5,13 @@ on:
   push:
     paths:
       - 'Dockerfile'
-      - '.github/workflows/dockerized_xray.yml'
+      - '.github/workflows/dockerized-xray.yml'
       - 'entrypoint.sh'
       - 'scheduled-job.sh'
   pull_request:
     paths:
       - 'Dockerfile'
-      - '.github/workflows/dockerized_xray.yml'
+      - '.github/workflows/dockerized-xray.yml'
       - 'entrypoint.sh'
       - 'scheduled-job.sh'
 
@@ -36,7 +36,7 @@ jobs:
         run: |
           COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})
           FIRST_LINE=$(echo "$COMMIT_MESSAGE" | head -n1)
-          TAG_NAME=$(echo "$FIRST_LINE" | tr -d '[:space:]') # Remove spaces if needed
+          TAG_NAME=$(echo "$FIRST_LINE" | tr -d '[:space:]' | tr ':' '-') # Remove spaces and replace : with - if needed
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Build and push Docker image
@@ -44,8 +44,8 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
           tags: |
-            ali4heydari/xray_docker_reality:${{env.TAG_NAME}}
-            ali4heydari/xray_docker_reality:latest
+            ali4heydari/xray-reality:${{env.TAG_NAME}}
+            ali4heydari/xray-reality:latest
           push: true
